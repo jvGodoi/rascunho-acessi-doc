@@ -168,6 +168,9 @@ main{
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
+  row-gap: 12px;
+  flex-wrap: wrap;
+  grid-template-columns: 1fr auto;
   align-items: center;
   font-family: "Roboto", sans-serif;
 }
@@ -176,6 +179,7 @@ main{
   display: flex;
   align-items: center;
   gap: 12px;
+  width: auto;
 }
 
 .anexo .file-icon {
@@ -188,7 +192,7 @@ main{
   color: #8A8A8A;
   margin-bottom: 2px;
   font-family: "Poppins";
-  max-width: 250px;
+  max-width: clamp(150px, 50vw, 250px); /* min 80px, varia até 30% da largura da tela, máx 250px */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -448,19 +452,26 @@ main{
   }
   main{
     flex-direction: column;
+    margin-bottom: 50px;
+    height: auto;
   }
 }
-@media (max-width: 800px) {
-  .upload-container{
-    width: 80%;
-  }
+@media (max-width: 830px) {
+
 }
 
 @media (max-width: 680px){
   .upload-container{
     width: 95%;
   }
-}
+  .anexo{
+    align-items: start;
+    row-gap: 12px;
+  }
+  .anexo .file-name{
+    width: 100%;
+  }
+
 
 @media (max-width: 560px){
 
@@ -486,4 +497,10 @@ main{
   .btn-play{
     margin: 15px 0;
   }
+  #link-download{
+    max-width: none;
+    width: 100%;
+    padding: 20px;
+  }
+}
 }
