@@ -434,3 +434,56 @@ main{
   text-align: center;
   padding: 24px 68px;
 }
+
+/* Responsividade */
+
+@media (max-width:1200px) {
+
+  body{
+    height: auto;
+  }
+  header .cabecalho{
+    position: static;
+    width: auto;
+  }
+  main{
+    flex-direction: column;
+  }
+}
+@media (max-width: 800px) {
+  .upload-container{
+    width: 80%;
+  }
+}
+
+@media (max-width: 680px){
+  .upload-container{
+    width: 95%;
+  }
+}
+
+@media (max-width: 560px){
+
+  .upload-container{
+    padding: 30px;
+  }
+
+  #player-section{
+    min-width: 350px;
+    width: auto;
+  }
+  .audio-buttons{
+    display: block;
+    width: 220px;
+    margin: 0 auto;
+  }  
+  .audio-buttons button{
+    width: 100%;
+  }
+  .volume-control{
+    max-width: none;
+  }
+  .btn-play{
+    margin: 15px 0;
+  }
+}

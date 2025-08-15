@@ -1,63 +1,87 @@
-const arquivoInput = document.getElementById('arquivoInput');
-const anexoInfo = document.getElementById('anexoInfo');
-const converterBtn = document.querySelector('.btn');
-const statusDiv = document.getElementById('status-conversao');
-const playerSection = document.getElementById('player-section');
+// ===== Seletores principais =====
+const arquivoInput   = document.getElementById('arquivoInput');
+const anexoInfo      = document.getElementById('anexoInfo');
+const converterBtn   = document.querySelector('.btn');
+const statusDiv      = document.getElementById('status-conversao');
+const playerSection  = document.getElementById('player-section');
 
-const audio = document.getElementById('audio');
-const barra = document.getElementById('barra-progresso');
-const tempoInicial = document.getElementById('tempo-inicial');
-const tempoFinal = document.getElementById('tempo-final');
-const playBtn = document.getElementById('play-btn');
-const repetirBtn = document.getElementById('repetir-btn');
-const volume = document.getElementById('volume');
-const volumeIcon = document.getElementById('volume-icon');
-
+const audio          = document.getElementById('audio');
+const source         = document.getElementById('audio-src');
+const barra          = document.getElementById('barra-progresso');
+const tempoInicial   = document.getElementById('tempo-inicial');
+const tempoFinal     = document.getElementById('tempo-final');
+const playBtn        = document.getElementById('play-btn');
+const repetirBtn     = document.getElementById('repetir-btn');
+const volumeRange    = document.getElementById('volume');
+const volumeIcon     = document.getElementById('volume-icon');
+const linkDownload   = document.getElementById('link-download');
+const overlayConversao = document.getElementById('overlay-conversao');
 
 let repetirAtivado = false;
 
-
+// ===== Utilitários =====
 function atualizarStatus(texto, classe) {
-  statusDiv.textContent = texto;
-  statusDiv.className = 'status-mensagem ' + classe;
+  statusDiv.textContent = texto || '';
+  statusDiv.className = 'status-mensagem ' + (classe || '');
 }
 
+function formatarTempo(segundos) {
+  const total = Math.floor(segundos || 0);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+
+  const mm = String(m).padStart(2, '0');
+  const ss = String(s).padStart(2, '0');
+  return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+}
+
+function tamanhoHumano(bytes) {
+  if (!Number.isFinite(bytes)) return '--';
+  return bytes >= 1024 * 1024
+    ? (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+    : (bytes / 1024).toFixed(1) + ' KB';
+}
+
+// ===== Preview e remoção do anexo =====
 arquivoInput.addEventListener('change', () => {
   const file = arquivoInput.files[0];
-  if (file) {
-    const extensaoValida = ['pdf', 'docx', 'txt'];
-    const nomeArquivo = file.name;
-    const extensao = nomeArquivo.split('.').pop().toLowerCase();
-
-    if (!extensaoValida.includes(extensao)) {
-      alert("Formato não suportado. Selecione um arquivo .pdf, .docx ou .txt");
-      arquivoInput.value = '';
-      anexoInfo.innerHTML = `<h4>Nenhum Arquivo Selecionado</h4>`;
-      atualizarStatus('', '');
-      return;
-    }
-
-    let tamanhoFormatado = (file.size >= 1024 * 1024) ?
-      (file.size / (1024 * 1024)).toFixed(1) + " MB" :
-      (file.size / 1024).toFixed(1) + " KB";
-
-    let icone = "/static/icones/arquivo-anexado.svg";
-    if (extensao === "pdf") icone = "/static/icones/pdf.svg";
-    if (extensao === "docx") icone = "/static/icones/docx.svg";
-
-    anexoInfo.innerHTML = `
-      <div class="info">
-        <img src="${icone}" alt="Ícone Arquivo" class="file-icon" />
-        <div>
-          <p class="file-name" title="${file.name}">${file.name}</p>
-          <p class="file-size">${tamanhoFormatado}</p>
-        </div>
-      </div>
-      <button class="remove-btn">✖ Remover Anexo</button>
-    `;
-
+  if (!file) {
+    anexoInfo.innerHTML = `<h4>Nenhum Arquivo Selecionado</h4>`;
     atualizarStatus('', '');
+    return;
   }
+
+  const extensaoValida = ['pdf', 'docx', 'txt'];
+  const nomeArquivo = file.name;
+  const extensao = nomeArquivo.split('.').pop().toLowerCase();
+
+  if (!extensaoValida.includes(extensao)) {
+    alert('Formato não suportado. Selecione um arquivo .pdf, .docx ou .txt');
+    arquivoInput.value = '';
+    anexoInfo.innerHTML = `<h4>Nenhum Arquivo Selecionado</h4>`;
+    atualizarStatus('', '');
+    return;
+  }
+
+  const tamanhoFormatado = tamanhoHumano(file.size);
+
+  let icone = '/static/icones/arquivo-anexado.svg';
+  if (extensao === 'pdf')  icone = '/static/icones/pdf.svg';
+  if (extensao === 'docx') icone = '/static/icones/docx.svg';
+
+  anexoInfo.innerHTML = `
+    <div class="info">
+      <img src="${icone}" alt="Ícone Arquivo" class="file-icon" />
+      <div>
+        <p class="file-name" title="${file.name}">${file.name}</p>
+        <p class="file-size">${tamanhoFormatado}</p>
+      </div>
+    </div>
+    <button class="remove-btn">✖ Remover Anexo</button>
+  `;
+
+  atualizarStatus('', '');
 });
 
 anexoInfo.addEventListener('click', (e) => {
@@ -68,47 +92,44 @@ anexoInfo.addEventListener('click', (e) => {
   }
 });
 
+// ===== Exibir player =====
 function exibirPlayer(nomeArquivo, tamanho, caminhoAudio) {
-  document.getElementById('audio-nome').textContent = nomeArquivo;
+  document.getElementById('audio-nome').textContent = nomeArquivo || 'Arquivo';
   document.getElementById('audio-meta').textContent = `${tamanho} | mp3`;
-  document.getElementById('audio-src').src = caminhoAudio;
-setTimeout(() => {
-  document.getElementById('audio').load();
-}, 100);
-  document.getElementById('audio').load();
-  document.getElementById('link-download').href = caminhoAudio;
-  document.getElementById('link-download').setAttribute('data-convertido', 'true');
+  source.src = caminhoAudio;
+  audio.load();
+
+  linkDownload.href = caminhoAudio;
+  linkDownload.setAttribute('data-convertido', 'true');
+
   playerSection.style.display = 'block';
 }
-const linkDownload = document.getElementById('link-download');
 
-linkDownload.addEventListener('click', function(e) {
+// Bloqueia download sem áudio
+linkDownload.addEventListener('click', function (e) {
   const convertido = linkDownload.getAttribute('data-convertido');
-
   if (convertido !== 'true') {
-    e.preventDefault(); // Impede o download
-    alert("Nenhum áudio disponível. Converta um arquivo primeiro.");
+    e.preventDefault();
+    alert('Nenhum áudio disponível. Converta um arquivo primeiro.');
   }
 });
 
-const overlayConversao = document.getElementById('overlay-conversao');
-
+// ===== Envio para conversão =====
 converterBtn.addEventListener('click', async () => {
   const file = arquivoInput.files[0];
   if (!file) {
-    alert("Por favor, selecione um arquivo para converter.");
+    alert('Por favor, selecione um arquivo para converter.');
     return;
   }
 
-  overlayConversao.style.display = 'flex'; // Mostra o modal
-  /* atualizarStatus("Convertendo, por favor aguarde...", "aguarde"); */
+  overlayConversao.style.display = 'flex';
 
   const formData = new FormData();
-  formData.append("arquivo", file);
+  formData.append('file', file); // campo esperado pelo back-end
 
   try {
-    const response = await fetch("/converter", {
-      method: "POST",
+    const response = await fetch('/convert', {
+      method: 'POST',
       body: formData
     });
 
@@ -116,114 +137,103 @@ converterBtn.addEventListener('click', async () => {
     try {
       dados = await response.json();
     } catch {
-      atualizarStatus("Erro inesperado na resposta do servidor.", "erro");
+      atualizarStatus('Erro inesperado na resposta do servidor.', 'erro');
       overlayConversao.style.display = 'none';
       return;
     }
 
-    if (response.ok) {
-      const tamanhoFormatado = (dados.tamanho >= 1024 * 1024)
-        ? (dados.tamanho / (1024 * 1024)).toFixed(1) + " MB"
-        : (dados.tamanho / 1024).toFixed(1) + " KB";
+    if (response.ok && dados.ok) {
+      const tamanhoFormatado = tamanhoHumano(file.size);
+      exibirPlayer(dados.filename || file.name, tamanhoFormatado, dados.audio_url);
 
-      exibirPlayer(dados.nome, tamanhoFormatado, dados.audio_url);
-      /* atualizarStatus("Conversão concluída com sucesso!", "sucesso"); */
+      // Mostra voz/idioma
+      const meta = document.getElementById('audio-meta');
+      if (meta) {
+        meta.textContent = `Voz: ${dados.voice} | Idioma: ${dados.detected_language}`;
+      }
+
+      atualizarStatus('Conversão concluída com sucesso!', 'sucesso');
     } else {
-      atualizarStatus(dados.erro || "Erro ao converter o arquivo.", "erro");
+      atualizarStatus(dados.error || 'Erro ao converter o arquivo.', 'erro');
     }
   } catch (err) {
-    console.error("Erro na requisição:", err);
-    atualizarStatus("Erro ao enviar o arquivo para o servidor.", "erro");
+    console.error('Erro na requisição:', err);
+    atualizarStatus('Erro ao enviar o arquivo para o servidor.', 'erro');
   } finally {
-    overlayConversao.style.display = 'none'; // Oculta após terminar
+    overlayConversao.style.display = 'none';
   }
 });
 
-// Player personalizado
-function formatarTempo(segundos) {
-  const totalSegundos = Math.floor(segundos);
-
-  const horas = Math.floor(totalSegundos / 3600);
-  const minutos = Math.floor((totalSegundos % 3600) / 60);
-  const seg = totalSegundos % 60;
-
-  const strMin = String(minutos).padStart(2, '0');
-  const strSeg = String(seg).padStart(2, '0');
-
-  if (horas > 0) {
-    return `${horas}:${strMin}:${strSeg}`; // formato HH:MM:SS
-  } else {
-    return `${strMin}:${strSeg}`;          // formato MM:SS
-  }
-}
-
+// ===== Player personalizado =====
 audio.addEventListener('loadedmetadata', () => {
-  barra.max = audio.duration;
+  barra.max = audio.duration || 0;
   tempoFinal.textContent = formatarTempo(audio.duration);
+  // estado inicial da barra
   barra.style.background = `linear-gradient(to right, #3498db 0%, #ddd 0%)`;
 });
 
 audio.addEventListener('timeupdate', () => {
-  barra.value = audio.currentTime;
+  barra.value = audio.currentTime || 0;
   tempoInicial.textContent = formatarTempo(audio.currentTime);
-  const progresso = (audio.currentTime / audio.duration) * 100;
+  const progresso = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
   barra.style.background = `linear-gradient(to right, #3498db ${progresso}%, #ddd ${progresso}%)`;
-
-  tempoInicial.textContent = formatarTempo(audio.currentTime);
 });
 
 audio.addEventListener('ended', () => {
   if (repetirAtivado) {
     audio.currentTime = 0;
     audio.play();
+  } else {
+    // volta o botão para "Ouvir"
+    playBtn.innerHTML = '<img src="/static/icones/fone.svg" alt="Ouvir"><span>Ouvir</span>';
   }
 });
 
 barra.addEventListener('input', () => {
-  audio.currentTime = barra.value;
+  audio.currentTime = Number(barra.value || 0);
 });
 
 playBtn.addEventListener('click', () => {
   if (audio.paused) {
     audio.play();
-    playBtn.innerHTML = '<img src="static/icones/pause.svg" <span>Pausar</span>';
+    playBtn.innerHTML = '<img src="/static/icones/pause.svg" alt="Pausar"><span>Pausar</span>';
   } else {
     audio.pause();
-    playBtn.innerHTML = '<img src="static/icones/fone.svg" <span>Ouvir</span>';
+    playBtn.innerHTML = '<img src="/static/icones/fone.svg" alt="Ouvir"><span>Ouvir</span>';
   }
 });
 
 repetirBtn.addEventListener('click', () => {
-  repetirAtivado = !repetirAtivado; // alterna entre true e false
-
+  repetirAtivado = !repetirAtivado;
   if (repetirAtivado) {
     repetirBtn.classList.add('ativo');
-    repetirBtn.innerHTML = `<img src="/static/icones/repetir-ativo.svg" alt="Repetir Ativado"> Repetir`;
+    repetirBtn.innerHTML = `<img src="/static/icones/repetir-ativo.svg" alt="Repetir Ativado"> <span>Repetir</span>`;
   } else {
     repetirBtn.classList.remove('ativo');
-    repetirBtn.innerHTML = `<img src="/static/icones/repetir.svg" alt="Repetir"> Repetir`;
+    repetirBtn.innerHTML = `<img src="/static/icones/repetir.svg" alt="Repetir"> <span>Repetir</span>`;
   }
 });
 
-function repetirAudio() {
-  audio.currentTime = 0;
-  audio.play();
-}
-
-volume.addEventListener('input', () => {
-  audio.volume = volume.value;
+// Volume
+volumeRange.addEventListener('input', () => {
+  audio.volume = Number(volumeRange.value);
+  if (audio.volume === 0 || audio.muted) {
+    volumeIcon.src = '/static/icones/som-mutado.svg';
+  } else {
+    volumeIcon.src = '/static/icones/volume.svg';
+  }
 });
 
 volumeIcon.addEventListener('click', () => {
   audio.muted = !audio.muted;
-
   if (audio.muted) {
-    volumeIcon.src = "/static/icones/som-mutado.svg";  // ícone de som desligado
+    volumeIcon.src = '/static/icones/som-mutado.svg';
   } else {
-    volumeIcon.src = "/static/icones/volume.svg"; // ícone de som normal
+    volumeIcon.src = '/static/icones/volume.svg';
   }
 });
 
+// ===== Drag & Drop =====
 const dropZone = document.getElementById('drop-zone');
 
 dropZone.addEventListener('dragover', (e) => {
@@ -238,11 +248,9 @@ dropZone.addEventListener('dragleave', () => {
 dropZone.addEventListener('drop', (e) => {
   e.preventDefault();
   dropZone.classList.remove('drag-over');
-
   const arquivos = e.dataTransfer.files;
-  if (arquivos.length > 0) {
+  if (arquivos && arquivos.length > 0) {
     arquivoInput.files = arquivos;
-    // Dispara evento de "change" para exibir preview
     arquivoInput.dispatchEvent(new Event('change'));
   }
 });
