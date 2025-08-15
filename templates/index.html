@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <title>AcessiDoc</title>
+</head>
+
+<body>
+  <header>
+    <div class="cabecalho">
+      <div class="logo">
+        <a href="#">
+          <h1>Acessi<span>Doc</span></h1>
+        </a>
+      </div>
+      <a href="#" class="conta">
+        <img src="{{ url_for('static', filename='icones/conta.svg') }}" alt="Ícone da conta">
+        Minha Conta
+      </a>
+    </div>
+  </header>
+  <main>
+    <section class="upload-container">
+      <div class="arquivo">
+        <input type="file" id="arquivoInput" class="file-input" accept=".pdf, .docx, .txt" />
+        <label for="arquivoInput" class="upload-box" id="drop-zone">
+          <img src="{{ url_for('static', filename='img/upload.png') }}" alt="Upload" class="upload-icon" />
+          <p>Arraste e solte o arquivo<br>ou Clique para selecionar</p>
+        </label>
+      </div>
+
+      <!-- Preview do anexo -->
+      <div class="anexo" id="anexoInfo">
+        <h4>Nenhum Arquivo Selecionado</h4>
+      </div>
+
+      <div class="voz">
+        <p>O idioma será detectado automaticamente.</p>
+      </div>
+
+      <div class="btn-converter">
+        <button type="button" class="btn">
+          Converter
+        </button>
+        <div id="status-conversao" class="status-mensagem" aria-live="polite">
+        </div>
+      </div>
+    </section>
+
+    <section id="player-section" style="display: none;" class="audio-player">
+      <p class="audio-label">Ouça abaixo o áudio convertido.</p>
+
+      <div class="audio-box">
+        <div class="audio-info">
+          <img src="{{ url_for('static', filename='icones/audio.svg') }}" alt="Ícone PDF" class="audio-icon">
+          <div>
+            <h4 class="audio-title" id="audio-nome">Nome do Arquivo</h4>
+            <p class="audio-meta" id="audio-meta">Tamanho | Formato</p>
+          </div>
+        </div>
+
+        <audio id="audio">
+          <source id="audio-src" src="" type="audio/mp3">
+          Seu navegador não suporta o elemento de áudio.
+        </audio>
+
+        <div class="tempo-player">
+          <span id="tempo-inicial">00:00</span>
+          <input type="range" id="barra-progresso" value="0" step="any">
+          <span id="tempo-final">00:00</span>
+        </div>
+
+
+        <div class="audio-buttons">
+          <button id="repetir-btn" class="btn-repetir">
+            <img src="{{ url_for('static', filename='icones/repetir.svg') }}" alt="Volume">
+            Repetir
+          </button>
+
+          <button id="play-btn" class="btn-play">
+            <img src="{{ url_for('static', filename='icones/fone.svg') }}" alt="Volume">
+            Ouvir
+          </button>
+
+          <div class="volume-control">
+            <img id="volume-icon" src="/static/icones/volume.svg" alt="Volume" style="cursor: pointer;">
+            <input type="range" id="volume" min="0" max="1" step="0.1" value="1" />
+          </div>
+        </div>
+      </div>
+
+      <p class="download-label">Baixe-o para ouvir em qualquer lugar.</p>
+      <a id="link-download" href="#" download class="btn-download" data-convertido="false">
+        <img src="{{ url_for('static', filename='icones/download.svg') }}" alt="">
+        Baixar Áudio
+      </a>
+
+    </section>
+
+    <div id="overlay-conversao" style="display: none;">
+      <div class="modal">
+        <p><img src="{{ url_for('static', filename='icones/tempo.svg') }}" alt="tempo"> O arquivo está sendo convertido...</p>
+      </div>
+    </div>
+  </main>
+  <!--   <footer class="rodape">
+    João Vitor dos Anjos Godoi - 2025
+  </footer> -->
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

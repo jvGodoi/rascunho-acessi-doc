@@ -1,0 +1,436 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body{
+  height: 100vh;
+  background-color: #F4F6F8;
+  /* display: flex;
+  flex-direction: column;  
+  justify-content: space-between; */
+}
+a{
+  text-decoration: none;
+}
+header .cabecalho{
+  width: 100vw;
+  position: fixed;
+  padding: 24px 68px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo{
+  font-family: "Poppins";
+}
+.logo h1{
+  color: #424242;
+}
+.logo span{
+  color: #0077CC;
+}
+.conta{
+  color: #6E6E6E;
+  font-weight: bold;
+  font-family: "Roboto";
+  display: flex;
+  gap: 8px;
+}
+main{
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+.upload-container{
+  max-width: 703px;
+  width: 90%;
+  min-width: 300px;
+  height: auto;
+  background-color: #FFF;
+  padding: 62px 82px;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+.arquivo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F0F0F0;
+}
+.arquivo p{
+  color: #636363;
+  font-weight: 500;
+}
+.file-input {
+  display: none;
+}
+
+.upload-box {
+  border: 2px dashed #ccc;
+  border-radius: 10px;  
+  width: 100%;
+  height: 150px;
+  cursor: pointer;
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #555;
+  font-family: Arial, sans-serif;
+  transition: border 0.3s;
+}
+
+.upload-box:hover {
+  border-color: #888;
+}
+
+.upload-icon {
+  width: 40px;
+  margin-bottom: 10px;
+}
+
+.anexo{
+  margin-top: 18px;
+  background-color: #f7f7f7;
+  border: 1px solid #ECECEC;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.anexo h4{
+  font-family: "Roboto";
+  color: #8A8A8A;
+}
+
+.voz{
+  margin-top: 46px;
+}
+
+.voz p{
+  color: #6C6C6C;
+  font-family: "Roboto";
+  font-size: 0.9rem;
+  margin-bottom: 9px;
+  font-weight: 500;
+}
+.btn-converter{
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+.status-mensagem{
+  position: absolute;
+  bottom: -30px;
+  font-family: "Roboto";
+  width: 100%;
+}
+.btn{
+  background-color: #0077CC;
+  color: #fff;
+  font-family: "Poppins";
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 12px 0;
+  border: none;
+  border-radius: 4px;
+  width: 162px;
+  cursor: pointer;
+}
+
+.status-mensagem {
+  margin-top: 1rem;
+  font-size: 1rem;
+  text-align: center;
+  color: #555;
+}
+
+.status-mensagem.sucesso {
+  color: green;
+}
+
+.status-mensagem.erro {
+  color: red;
+}
+
+.status-mensagem.aguarde {
+  color: #0066cc;
+}
+
+
+.anexo {
+  margin-top: 18px;
+  background-color: #f7f7f7;
+  border: 1px solid #ECECEC;
+  border-radius: 4px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Roboto", sans-serif;
+}
+
+.anexo .info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.anexo .file-icon {
+  width: 40px;
+}
+
+.anexo .file-name {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #8A8A8A;
+  margin-bottom: 2px;
+  font-family: "Poppins";
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.anexo .file-size {
+  font-size: 0.8rem;
+  color: #9F9B9B;
+  font-weight: 700;
+}
+
+.anexo .remove-btn {
+  background-color: #925252;
+  color: #fff;
+  border: none;
+  font-family: "Poppins";
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.anexo .remove-btn:hover {
+  background-color: #922D2D;
+}
+
+#player-section {
+  min-width: 520px;
+}
+
+.audio-label,
+.download-label {
+  font-family: "Roboto", sans-serif;
+  color: #282828;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.audio-box {
+  background-color: #ffffff;
+  margin-bottom: 40px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #E4E4E4;
+}
+
+.audio-info {
+  background-color: #3E3E3E;
+  height: 90px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 12px 20px;
+  border-radius: 8px;
+}
+
+.audio-info h4 {
+  font-family: "Roboto", sans-serif;
+  margin-bottom: 3px;
+  font-size: 18px;
+  max-width: 420px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.audio-title,
+.audio-meta {
+  font-size: 0.85rem;
+  font-family: "Roboto", sans-serif;
+}
+
+#barra-progresso {
+  flex-grow: 1;
+  height: 8px;
+  border-radius: 5px;
+  background: #ddd;
+  appearance: none;
+  outline: none;
+}
+
+#barra-progresso::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #3498db;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.audio-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.audio-icon{
+  width: 50px;
+}
+
+.btn-repetir,
+.btn-play {
+  padding: 10px 24px;
+  height: 40px;
+  width: 130px;
+  font-weight: bold;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+  transition: 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.btn-repetir {
+  background: #e0e0e0;
+  color: #656565;
+}
+#repetir-btn.ativo {
+  background-color: #0077cc;
+  color: white;
+}
+
+.btn-repetir:hover {
+  background: #d4d4d4;
+}
+
+.btn-play {
+  background: #007bff;
+  color: #fff;
+}
+
+.btn-play:hover {
+  background: #006ae0;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 110px;
+}
+#volume{
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.volume-control input[type="range"] {
+  width: 100px;
+  accent-color: #3498db;
+}
+
+#link-download {
+  background-color: #0077CC;
+  color: #fff;
+  text-transform: uppercase;
+  font-family: "Roboto", sans-serif;
+  padding: 12px 16px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  max-width: 180px;
+  margin-top: 12px;
+  text-decoration: none;
+  transition: 0.2s;
+  font-weight: 600;
+}
+
+#link-download:hover {
+  background-color: #01538d;
+}
+
+.tempo-player{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 30px 0px 20px 0;
+}
+
+#tempo-inicial, #tempo-final{
+  color: #4E4E4E;
+  font-family: "Roboto";
+  font-weight: 600;
+}
+
+#overlay-conversao {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+}
+
+#overlay-conversao .modal {
+  background-color: #F5F5F5;
+  height: auto;
+  max-width: 464px;
+  margin: 0 auto;
+  padding: 30px 40px;
+  border-radius: 8px;
+  text-align: center;
+  font-family: "Roboto", sans-serif;
+  color: #333;
+  font-size: 1.1rem;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+}
+.modal p{
+  display: flex;
+  gap: 14px;
+  align-items: start;
+}
+
+.upload-box.drag-over {
+  border-color: #0077cc;
+  background-color: #e8f4ff;
+}
+.rodape{
+  font-family: "Roboto";
+  font-weight: 500;
+  color: #424242;
+  text-align: center;
+  padding: 24px 68px;
+}
