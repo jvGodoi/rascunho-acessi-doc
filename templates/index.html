@@ -16,7 +16,7 @@
     <div class="cabecalho">
       <div class="logo">
         <a href="#">
-          <h1>Acessi<span>Doc</span></h1>
+          <h1>Acessi<span>Doc.</span></h1>
         </a>
       </div>
       <!-- <a href="#" class="conta">
@@ -44,9 +44,9 @@
 
         <fieldset class="voz-genero">
           <div class="voz-genero-cont">
-            <legend class="voz-genero-titulo">Escolha a voz</legend>
+            <p>O idioma será detectado automaticamente</p>
             <div class="separador"></div>
-            <p>O idioma será detectado automaticamente.</p>
+            <legend class="voz-genero-titulo">Converter na voz:</legend>
           </div>
           <div class="voz-genero-vozes">
             <label class="voz-genero-gen">
@@ -69,7 +69,7 @@
       </div>
     </section>
 
-    <section id="player-section" style="display: block;" class="audio-player">
+    <section id="player-section" style="display: none;" class="audio-player">
       <p class="audio-label">Ouça abaixo o áudio convertido.</p>
 
       <div class="audio-box">
@@ -77,7 +77,11 @@
           <img src="{{ url_for('static', filename='icones/audio.svg') }}" alt="Ícone PDF" class="audio-icon">
           <div>
             <h4 class="audio-title" id="audio-nome">Nome do Arquivo</h4>
-            <p class="audio-meta" id="audio-meta">Voz | Idioma</p>
+            <div class="audio-meta" id="audio-meta">
+              <span>Voz</span>
+              <div class="separador"></div>
+              <span>Idioma</span>
+            </div>
           </div>
         </div>
 

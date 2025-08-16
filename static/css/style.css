@@ -160,6 +160,7 @@ main{
   display: flex;
   justify-content: center;
   position: relative;
+  margin-top: 32px;
 }
 .status-mensagem{
   position: absolute;
@@ -311,6 +312,16 @@ main{
 .audio-meta {
   font-size: 0.85rem;
   font-family: "Roboto", sans-serif;
+}
+
+.audio-meta{
+  display: flex;
+  flex-direction: row;
+  column-gap: 12px;
+  flex-wrap: wrap;
+}
+.audio-meta .separador{
+  background-color: #fff;
 }
 
 #barra-progresso {
@@ -512,17 +523,25 @@ main{
   .anexo .file-name{
     width: 100%;
   }
-
+  .anexo .remove-btn{
+    width: 100%;
+    padding: 10px 14px;
+  }
+}
 
 @media (max-width: 560px){
 
   .upload-container{
-    padding: 30px;
+    padding: 30px 30px 60px 30px;
+  }
+  header .cabecalho{
+    display: block;
+    text-align: center;
   }
 
   #player-section{
-    min-width: 350px;
-    width: auto;
+    min-width: 95%; 
+    width: 95%;
   }
   .audio-buttons{
     display: block;
@@ -544,4 +563,13 @@ main{
     padding: 20px;
   }
 }
+
+@media (max-width: 430px){
+   .audio-meta {
+    flex-direction: column;
+  }
+
+  .audio-meta .separador{
+    display: none;
+  }
 }
