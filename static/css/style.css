@@ -60,6 +60,7 @@ main{
   justify-content: center;
   align-items: center;
   background-color: #F0F0F0;
+  border-radius: 10px;  
 }
 .arquivo p{
   color: #636363;
@@ -139,6 +140,10 @@ main{
   display: inline-flex; 
   align-items: center; 
   gap: 6px; 
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: #e6e6e6a8;
+  font-weight: 500;
 }
 
 .voz-genero-vozes{
@@ -147,7 +152,7 @@ main{
   column-gap: 20px;
   font-family: "Roboto";
   font-size: 0.9rem;
-  color: #6C6C6C;
+  color: #2c2c2c;
 }
 
 .voz p{
@@ -157,8 +162,10 @@ main{
   font-weight: 500;
 }
 .btn-converter{
-  display: flex;
-  justify-content: center;
+  /* display: flex;
+  justify-content: center; */
+  display: inline-block;
+  width: 100%;
   position: relative;
   margin-top: 32px;
 }
@@ -174,11 +181,13 @@ main{
   font-family: "Poppins";
   font-weight: 600;
   text-transform: uppercase;
-  padding: 12px 0;
+  padding: 16px 0;
   border: none;
   border-radius: 4px;
-  width: 162px;
+  /* width: 162px; */
+  width: 100%;
   cursor: pointer;
+  font-size: 1rem;
 }
 
 .status-mensagem {
@@ -344,9 +353,12 @@ main{
 }
 
 .audio-buttons {
-  display: flex;
+  /* display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; */
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  align-items: center;
   gap: 16px;
 }
 
@@ -399,7 +411,7 @@ main{
   display: flex;
   align-items: center;
   gap: 4px;
-  max-width: 110px;
+  max-width: 100%;
 }
 #volume{
   border: none;
@@ -409,8 +421,9 @@ main{
 
 .volume-control input[type="range"] {
   width: 100px;
-  accent-color: #3498db;
+  accent-color: #f5c321;
 }
+
 
 #link-download {
   background-color: #0077CC;
@@ -544,15 +557,21 @@ main{
     width: 95%;
   }
   .audio-buttons{
-    display: block;
+    /* display: block;
     width: 220px;
-    margin: 0 auto;
+    margin: 0 auto; */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    align-content: start;
   }  
   .audio-buttons button{
     width: 100%;
   }
   .volume-control{
     max-width: none;
+    grid-column: 1/-1;
+    align-self: start;
   }
   .btn-play{
     margin: 15px 0;
