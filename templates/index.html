@@ -41,9 +41,25 @@
       </div>
 
       <div class="voz">
-        <p>O idioma será detectado automaticamente.</p>
-      </div>
 
+        <fieldset class="voz-genero">
+          <div class="voz-genero-cont">
+            <legend class="voz-genero-titulo">Escolha a voz</legend>
+            <div class="separador"></div>
+            <p>O idioma será detectado automaticamente.</p>
+          </div>
+          <div class="voz-genero-vozes">
+            <label class="voz-genero-gen">
+              <input type="radio" name="gender" value="Female" checked>
+              Feminina
+            </label>
+            <label class="voz-genero-gen">
+              <input type="radio" name="gender" value="Male">
+              Masculina
+            </label>
+          </div>
+        </fieldset>
+      </div>
       <div class="btn-converter">
         <button type="button" class="btn">
           Converter
@@ -61,7 +77,7 @@
           <img src="{{ url_for('static', filename='icones/audio.svg') }}" alt="Ícone PDF" class="audio-icon">
           <div>
             <h4 class="audio-title" id="audio-nome">Nome do Arquivo</h4>
-            <p class="audio-meta" id="audio-meta">Tamanho | Formato</p>
+            <p class="audio-meta" id="audio-meta">Voz | Idioma</p>
           </div>
         </div>
 

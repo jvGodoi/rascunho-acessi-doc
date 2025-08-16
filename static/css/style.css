@@ -109,11 +109,51 @@ main{
   margin-top: 46px;
 }
 
+.voz-genero { 
+  border: 0; 
+  padding: 0; 
+  margin: 6px 0; 
+  display: flex; 
+  flex-direction: column;
+  gap: 8px; 
+}
+.voz-genero-cont{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.voz-genero-titulo{
+  font-family: "Roboto";
+  color: #6C6C6C;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.separador{
+  height: 15px;
+  width: 1.5px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.voz-genero label { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 6px; 
+}
+
+.voz-genero-vozes{
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 20px;
+  font-family: "Roboto";
+  font-size: 0.9rem;
+  color: #6C6C6C;
+}
+
 .voz p{
   color: #6C6C6C;
   font-family: "Roboto";
   font-size: 0.9rem;
-  margin-bottom: 9px;
   font-weight: 500;
 }
 .btn-converter{
@@ -225,6 +265,7 @@ main{
 
 #player-section {
   min-width: 520px;
+  width: 520px;
 }
 
 .audio-label,
@@ -259,7 +300,7 @@ main{
   font-family: "Roboto", sans-serif;
   margin-bottom: 3px;
   font-size: 18px;
-  max-width: 420px;
+  max-width: clamp(150px, 50vw, 250px); /* min 80px, varia até 30% da largura da tela, máx 250px */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

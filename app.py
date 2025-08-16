@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
 from docx import Document
 from langdetect import detect
+from voices_catalog import voices_for_lang, default_voice_for_lang, as_public_voice
 import edge_tts
 import re
 
@@ -74,6 +75,8 @@ def synthesize_to_mp3(text, voice, out_path):
 @app.route("/")
 def index():
     return render_template("index.html")
+# app.py
+
 
 @app.route("/convert", methods=["POST"])
 def convert():
@@ -92,44 +95,62 @@ def convert():
     file.save(upload_path)
 
     import time as t
-    inicio = t.time()  # marca o início
+    inicio = t.time()
 
     try:
         raw_text = extract_text(upload_path)
         text = clean_text(raw_text)
-        lang = detect_lang(text)
-        voice = pick_voice(lang)
+        lang = detect_lang(text)  # ex.: 'pt'
+
+        # 👇 lê a preferência do usuário
+        preferred_gender = request.form.get("preferred_gender")  # 'Male' | 'Female' | None
+
+        # Se o usuário especificar uma voz exata (opcional):
+        user_voice = request.form.get("voice")  # ex.: 'pt-BR-FranciscaNeural'
+
+        # Lista de vozes possíveis para o idioma detectado
+        available = voices_for_lang(lang)
+
+        # Valida a voz exata, se enviada
+        def is_valid_voice(vshort):
+            return any(vshort == v["shortName"] for v in available)
+
+        if user_voice and is_valid_voice(user_voice):
+            voice = user_voice
+        else:
+            # Escolhe padrão respeitando o gênero quando possível
+            voice = default_voice_for_lang(lang, prefer_gender=preferred_gender)
+            # Fallback absoluto, caso não haja catálogo:
+            if not voice:
+                voice = pick_voice(lang)  # sua função antiga
 
         out_name = f"{os.path.splitext(filename)[0]}_{int(t.time())}.mp3"
         out_path = os.path.join(AUDIO_FOLDER, out_name)
 
         synthesize_to_mp3(text, voice, out_path)
 
-        # calcula o tempo
-        fim = t.time()
-        duracao = fim - inicio
+        # Log de tempo (em seg ou min+seg)
+        duracao = t.time() - inicio
         if duracao < 60:
             print(f"[INFO] Conversão concluída em {duracao:.2f} segundos para '{filename}'")
         else:
-            minutos = int(duracao // 60)
-            segundos = int(duracao % 60)
-            print(f"[INFO] Conversão concluída em {minutos} min {segundos} seg para '{filename}'")
+            m, s = divmod(int(duracao), 60)
+            print(f"[INFO] Conversão concluída em {m} min {s} seg para '{filename}'")
 
         return jsonify(
             ok=True,
             filename=filename,
             detected_language=lang,
             voice=voice,
+            available_voices=[as_public_voice(v) for v in available],  # opcional: lista pro front
             audio_url=f"/audio/{out_name}"
         )
     except Exception as e:
         return jsonify(error=str(e)), 500
     finally:
-        try:
-            os.remove(upload_path)
-        except Exception:
-            pass
-
+        try: os.remove(upload_path)
+        except Exception: pass
+        
 @app.route("/audio/<path:filename>")
 def get_audio(filename):
     return send_from_directory(AUDIO_FOLDER, filename, as_attachment=False)

@@ -127,6 +127,10 @@ converterBtn.addEventListener('click', async () => {
   const formData = new FormData();
   formData.append('file', file); // campo esperado pelo back-end
 
+  // >>> NOVO: envia o gênero escolhido pelo usuário
+  const generoEscolhido = document.querySelector('input[name="gender"]:checked')?.value; // 'Female' | 'Male'
+  if (generoEscolhido) formData.append('preferred_gender', generoEscolhido);
+
   try {
     const response = await fetch('/convert', {
       method: 'POST',
@@ -146,10 +150,12 @@ converterBtn.addEventListener('click', async () => {
       const tamanhoFormatado = tamanhoHumano(file.size);
       exibirPlayer(dados.filename || file.name, tamanhoFormatado, dados.audio_url);
 
-      // Mostra voz/idioma
+      // Mostra voz/idioma formatados
       const meta = document.getElementById('audio-meta');
       if (meta) {
-        meta.textContent = `Voz: ${dados.voice} | Idioma: ${dados.detected_language}`;
+        const vozNome = formatVoiceLabel(dados.voice);
+        const idiomaNome = formatLanguageLabel(dados.voice, dados.detected_language);
+        meta.textContent = `Voz: ${vozNome} | Idioma: ${idiomaNome}`;
       }
 
       atualizarStatus('Conversão concluída com sucesso!', 'sucesso');
@@ -254,3 +260,71 @@ dropZone.addEventListener('drop', (e) => {
     arquivoInput.dispatchEvent(new Event('change'));
   }
 });
+
+// ==== Rótulos amigáveis para voz e idioma ====
+const VOICE_LABELS = {
+  'pt-BR-AntonioNeural': 'Antônio Neural',
+  'pt-BR-FranciscaNeural': 'Francisca Neural',
+  'pt-PT-DuarteNeural': 'Duarte Neural',
+  'pt-PT-RaquelNeural': 'Raquel Neural',
+  'en-US-GuyNeural': 'Guy Neural',
+  'en-US-JennyNeural': 'Jenny Neural',
+  'es-ES-AlvaroNeural': 'Álvaro Neural',
+  'fr-FR-HenriNeural': 'Henri Neural',
+  'de-DE-ConradNeural': 'Conrad Neural',
+  'it-IT-DiegoNeural': 'Diego Neural',
+  'ru-RU-DmitryNeural': 'Dmitry Neural'
+};
+
+// Nome do idioma por localidade (locale)
+const LOCALE_NAMES = {
+  'pt-BR': 'Português - BR',
+  'pt-PT': 'Português - PT',
+  'en-US': 'Inglês - EUA',
+  'es-ES': 'Espanhol - ES',
+  'fr-FR': 'Francês - FR',
+  'de-DE': 'Alemão - DE',
+  'it-IT': 'Italiano - IT',
+  'ru-RU': 'Russo - RU'
+};
+
+// Fallback quando só temos o código curto detectado ("pt", "en"...)
+const LANG_CODE_NAMES = {
+  'pt': 'Português',
+  'en': 'Inglês',
+  'es': 'Espanhol',
+  'fr': 'Francês',
+  'de': 'Alemão',
+  'it': 'Italiano',
+  'ru': 'Russo'
+};
+
+function getLocaleFromVoice(voiceShortname) {
+  // "pt-BR-AntonioNeural" -> "pt-BR"
+  if (!voiceShortname) return null;
+  const parts = voiceShortname.split('-'); // ['pt','BR','AntonioNeural']
+  if (parts.length >= 3) return `${parts[0]}-${parts[1]}`;
+  return null;
+}
+
+function formatVoiceLabel(voiceShortname) {
+  if (!voiceShortname) return '--';
+  // Se houver no dicionário, usa
+  if (VOICE_LABELS[voiceShortname]) return VOICE_LABELS[voiceShortname];
+
+  // Heurística de fallback: pega o “nome” depois do locale e coloca espaço antes de "Neural"
+  const parts = voiceShortname.split('-');
+  const raw = parts.slice(2).join('-'); // "AntonioNeural"
+  return raw.replace(/Neural$/, ' Neural'); // "Antonio Neural"
+}
+
+function formatLanguageLabel(voiceShortname, detectedLangCode) {
+  const locale = getLocaleFromVoice(voiceShortname);
+  if (locale && LOCALE_NAMES[locale]) return LOCALE_NAMES[locale];
+
+  // fallback pro código curto detectado
+  if (detectedLangCode && LANG_CODE_NAMES[detectedLangCode]) {
+    return LANG_CODE_NAMES[detectedLangCode];
+  }
+  return detectedLangCode || '--';
+}
