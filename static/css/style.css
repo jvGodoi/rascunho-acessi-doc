@@ -38,7 +38,15 @@ header .cabecalho{
   display: flex;
   gap: 8px;
 }
+
+.acessibilidade-icon{
+  position: absolute;
+  right: 32px;
+  top: 50%;
+}
+
 main{
+  position: relative;
   height: 100vh;
   display: flex;
   justify-content: center;
