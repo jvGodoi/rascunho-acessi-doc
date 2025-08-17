@@ -36,6 +36,7 @@
       </div>
 
       <!-- Preview do anexo -->
+      <h4 class="info-idioma">O idioma será detectado automaticamente</h4>
       <div class="anexo" id="anexoInfo">
         <h4>Nenhum Arquivo Selecionado</h4>
       </div>
@@ -44,19 +45,14 @@
 
         <fieldset class="voz-genero">
           <div class="voz-genero-cont">
-            <p>O idioma será detectado automaticamente</p>
-            <div class="separador"></div>
             <legend class="voz-genero-titulo">Converter na voz:</legend>
           </div>
           <div class="voz-genero-vozes">
-            <label class="voz-genero-gen">
-              <input type="radio" name="gender" value="Female" checked>
-              Feminina
-            </label>
-            <label class="voz-genero-gen">
-              <input type="radio" name="gender" value="Male">
-              Masculina
-            </label>
+            <input type="radio" id="vozF" name="gender" value="Female" checked>
+            <label class="voz-genero-gen" for="vozF">Feminina</label>
+
+            <input type="radio" id="vozM" name="gender" value="Male">
+            <label class="voz-genero-gen" for="vozM">Masculina</label>
           </div>
         </fieldset>
       </div>
@@ -79,7 +75,7 @@
             <h4 class="audio-title" id="audio-nome">Nome do Arquivo</h4>
             <div class="audio-meta" id="audio-meta">
               <span>Voz</span>
-              <div class="separador"></div>
+              <span class="separador"></span>
               <span>Idioma</span>
             </div>
           </div>

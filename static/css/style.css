@@ -94,7 +94,6 @@ main{
 }
 
 .anexo{
-  margin-top: 18px;
   background-color: #f7f7f7;
   border: 1px solid #ECECEC;
   border-radius: 4px;
@@ -107,13 +106,13 @@ main{
 }
 
 .voz{
-  margin-top: 46px;
+ /*  margin-top: 46px; */
 }
 
 .voz-genero { 
-  border: 0; 
+  border: 0;
   padding: 0; 
-  margin: 6px 0; 
+  margin: 16px 0; 
   display: flex; 
   flex-direction: column;
   gap: 8px; 
@@ -136,23 +135,37 @@ main{
   width: 1.5px;
   background-color: rgba(0, 0, 0, 0.3);
 }
-.voz-genero label { 
-  display: inline-flex; 
-  align-items: center; 
-  gap: 6px; 
-  padding: 8px 12px;
-  border-radius: 4px;
-  background-color: #e6e6e6a8;
-  font-weight: 500;
+.voz-genero-vozes input[type="radio"] {
+  display: none; /* esconde o botão padrão */
 }
 
+.voz-genero-gen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 15px;
+  border-radius: 4px;
+  background-color: #ececec;
+  font-weight: 500;
+  flex-grow: 2;
+  color: #5f5f5f;
+  font-family: "Roboto";
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+}
+
+.voz-genero-vozes input[type="radio"]:checked + .voz-genero-gen {
+  border: 1px solid #727272;
+  background-color: #cacaca;
+}
 .voz-genero-vozes{
   display: flex;
   flex-wrap: wrap;
   column-gap: 20px;
-  font-family: "Roboto";
-  font-size: 0.9rem;
-  color: #2c2c2c;
+  row-gap: 20px; 
+  justify-content: center;
 }
 
 .voz p{
@@ -167,7 +180,7 @@ main{
   display: inline-block;
   width: 100%;
   position: relative;
-  margin-top: 32px;
+  margin-top: 16px;
 }
 .status-mensagem{
   position: absolute;
@@ -209,9 +222,15 @@ main{
   color: #0066cc;
 }
 
+.info-idioma{
+  margin: 16px 0;
+  font-family: "Roboto";
+  font-size: 0.9rem;
+  color: #7a7a7a;
+  text-align: left;
+}
 
 .anexo {
-  margin-top: 18px;
   background-color: #f7f7f7;
   border: 1px solid #ECECEC;
   border-radius: 4px;
@@ -323,12 +342,13 @@ main{
   font-family: "Roboto", sans-serif;
 }
 
-.audio-meta{
+ .audio-meta{
   display: flex;
   flex-direction: row;
   column-gap: 12px;
   flex-wrap: wrap;
-}
+} 
+
 .audio-meta .separador{
   background-color: #fff;
 }
@@ -430,13 +450,13 @@ main{
   color: #fff;
   text-transform: uppercase;
   font-family: "Roboto", sans-serif;
-  padding: 12px 16px;
+  padding: 16px 0;
   border-radius: 4px;
   display: flex;
   align-items: center;
   gap: 10px;
   justify-content: center;
-  max-width: 180px;
+  max-width: 280px;
   margin-top: 12px;
   text-decoration: none;
   transition: 0.2s;
@@ -588,7 +608,7 @@ main{
     flex-direction: column;
   }
 
-  .audio-meta .separador{
+    .separador{
     display: none;
   }
 }

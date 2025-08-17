@@ -155,7 +155,9 @@ converterBtn.addEventListener('click', async () => {
       if (meta) {
         const vozNome = formatVoiceLabel(dados.voice);
         const idiomaNome = formatLanguageLabel(dados.voice, dados.detected_language);
-        meta.textContent = `Voz: ${vozNome} | Idioma: ${idiomaNome}`;
+        meta.innerHTML = `
+              <span class="voz">Voz: ${vozNome}</span> 
+              <span class="idioma">Idioma: ${idiomaNome}</span>`;  
       }
 
       atualizarStatus('Conversão concluída com sucesso!', 'sucesso');
