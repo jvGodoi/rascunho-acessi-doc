@@ -4,3 +4,4 @@ langdetect
 edge-tts
 PyPDF2
 python-docx
+pydub

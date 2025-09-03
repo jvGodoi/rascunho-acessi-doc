@@ -6,29 +6,28 @@
 body{
   height: 100vh;
   background-color: #F4F6F8;
-  /* display: flex;
-  flex-direction: column;  
-  justify-content: space-between; */
 }
 a{
   text-decoration: none;
 }
+
 header .cabecalho{
   width: 100vw;
   position: fixed;
+  z-index: 1000;
   padding: 24px 68px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.logo{
+.marca{
   font-family: "Poppins";
 }
-.logo h1{
+.marca h1{
   color: #424242;
 }
-.logo span{
+.marca span{
   color: #0077CC;
 }
 .conta{
@@ -39,7 +38,7 @@ header .cabecalho{
   gap: 8px;
 }
 
-.acessibilidade-icon{
+.icone-acessibilidade{
   position: absolute;
   right: 32px;
   top: 50%;
@@ -53,7 +52,8 @@ main{
   align-items: center;
   gap: 30px;
 }
-.upload-container{
+
+.container-upload{
   max-width: 703px;
   width: 90%;
   min-width: 300px;
@@ -63,24 +63,24 @@ main{
   box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 }
-.arquivo {
+.bloco-arquivo {
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #F0F0F0;
-  border-radius: 10px;  
+  border-radius: 10px;
 }
-.arquivo p{
+.bloco-arquivo p{
   color: #636363;
   font-weight: 500;
 }
-.file-input {
+.entrada-arquivo {
   display: none;
 }
 
-.upload-box {
+.caixa-upload {
   border: 2px dashed #ccc;
-  border-radius: 10px;  
+  border-radius: 10px;
   width: 100%;
   height: 150px;
   cursor: pointer;
@@ -89,32 +89,87 @@ main{
   background-color: #f8f8f8;
   color: #555;
   font-family: Arial, sans-serif;
-  transition: border 0.3s;
+  transition: border 0.3s, background-color 0.3s;
 }
-
-.upload-box:hover {
+.caixa-upload:hover {
   border-color: #888;
 }
+.caixa-upload.arraste-sobre {
+  border-color: #0077cc;
+  background-color: #e8f4ff;
+}
 
-.upload-icon {
+.icone-upload {
   width: 40px;
   margin-bottom: 10px;
 }
 
-.anexo{
+.info-idioma{
+  margin: 16px 0;
+  font-family: "Roboto";
+  font-size: 0.9rem;
+  color: #7a7a7a;
+  text-align: left;
+}
+
+.bloco-anexo{
   background-color: #f7f7f7;
   border: 1px solid #ECECEC;
   border-radius: 4px;
-  padding: 20px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  row-gap: 12px;
+  flex-wrap: wrap;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  font-family: "Roboto", sans-serif;
 }
-
-.anexo h4{
+.bloco-anexo h4{
   font-family: "Roboto";
   color: #8A8A8A;
 }
 
-.voz{
- /*  margin-top: 46px; */
+.bloco-anexo .info-arquivo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: auto;
+}
+.bloco-anexo .icone-arquivo {
+  width: 40px;
+}
+.bloco-anexo .nome-arquivo {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #8A8A8A;
+  margin-bottom: 2px;
+  font-family: "Poppins";
+  max-width: clamp(150px, 50vw, 250px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bloco-anexo .tamanho-arquivo {
+  font-size: 0.8rem;
+  color: #9F9B9B;
+  font-weight: 700;
+}
+.bloco-anexo .botao-remover {
+  background-color: #925252;
+  color: #fff;
+  border: none;
+  font-family: "Poppins";
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.bloco-anexo .botao-remover:hover {
+  background-color: #922D2D;
 }
 
 .voz-genero { 
@@ -125,13 +180,12 @@ main{
   flex-direction: column;
   gap: 8px; 
 }
-.voz-genero-cont{
+.voz-genero-conteudo{
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
 }
-
 .voz-genero-titulo{
   font-family: "Roboto";
   color: #6C6C6C;
@@ -143,11 +197,11 @@ main{
   width: 1.5px;
   background-color: rgba(0, 0, 0, 0.3);
 }
-.voz-genero-vozes input[type="radio"] {
-  display: none; /* esconde o botão padrão */
-}
 
-.voz-genero-gen {
+.voz-genero-opcoes input[type="radio"] {
+  display: none;
+}
+.voz-genero-rotulo {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -163,40 +217,39 @@ main{
   cursor: pointer;
   letter-spacing: 0.3px;
 }
-
-.voz-genero-vozes input[type="radio"]:checked + .voz-genero-gen {
+.voz-genero-opcoes input[type="radio"]:checked + .voz-genero-rotulo {
   border: 1px solid #727272;
   background-color: #cacaca;
 }
-.voz-genero-vozes{
+.voz-genero-opcoes{
   display: flex;
   flex-wrap: wrap;
   column-gap: 20px;
   row-gap: 20px; 
+  flex-direction: row-reverse;
   justify-content: center;
 }
 
-.voz p{
+.bloco-voz p{
   color: #6C6C6C;
   font-family: "Roboto";
   font-size: 0.9rem;
   font-weight: 500;
 }
-.btn-converter{
-  /* display: flex;
-  justify-content: center; */
+
+.bloco-converter{
   display: inline-block;
   width: 100%;
   position: relative;
   margin-top: 16px;
 }
-.status-mensagem{
+.mensagem-status{
   position: absolute;
   bottom: -30px;
   font-family: "Roboto";
   width: 100%;
 }
-.btn{
+.botao{
   background-color: #0077CC;
   color: #fff;
   font-family: "Poppins";
@@ -205,124 +258,41 @@ main{
   padding: 16px 0;
   border: none;
   border-radius: 4px;
-  /* width: 162px; */
   width: 100%;
   cursor: pointer;
   font-size: 1rem;
 }
 
-.status-mensagem {
+.mensagem-status {
   margin-top: 1rem;
   font-size: 1rem;
   text-align: center;
   color: #555;
 }
+.mensagem-status.sucesso { color: green; }
+.mensagem-status.erro { color: red; }
+.mensagem-status.aguarde { color: #0066cc; }
 
-.status-mensagem.sucesso {
-  color: green;
-}
-
-.status-mensagem.erro {
-  color: red;
-}
-
-.status-mensagem.aguarde {
-  color: #0066cc;
-}
-
-.info-idioma{
-  margin: 16px 0;
-  font-family: "Roboto";
-  font-size: 0.9rem;
-  color: #7a7a7a;
-  text-align: left;
-}
-
-.anexo {
-  background-color: #f7f7f7;
-  border: 1px solid #ECECEC;
-  border-radius: 4px;
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  row-gap: 12px;
-  flex-wrap: wrap;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  font-family: "Roboto", sans-serif;
-}
-
-.anexo .info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: auto;
-}
-
-.anexo .file-icon {
-  width: 40px;
-}
-
-.anexo .file-name {
-  font-weight: 500;
-  font-size: 1rem;
-  color: #8A8A8A;
-  margin-bottom: 2px;
-  font-family: "Poppins";
-  max-width: clamp(150px, 50vw, 250px); /* min 80px, varia até 30% da largura da tela, máx 250px */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
-.anexo .file-size {
-  font-size: 0.8rem;
-  color: #9F9B9B;
-  font-weight: 700;
-}
-
-.anexo .remove-btn {
-  background-color: #925252;
-  color: #fff;
-  border: none;
-  font-family: "Poppins";
-  font-weight: bold;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.anexo .remove-btn:hover {
-  background-color: #922D2D;
-}
-
-#player-section {
+#secao-player {
   min-width: 520px;
   width: 520px;
 }
-
-.audio-label,
-.download-label {
+.rotulo-audio,
+.rotulo-download {
   font-family: "Roboto", sans-serif;
   color: #282828;
   margin-bottom: 12px;
   font-weight: 600;
   font-size: 1rem;
 }
-
-.audio-box {
+.caixa-audio {
   background-color: #ffffff;
   margin-bottom: 40px;
   padding: 20px;
   border-radius: 10px;
   border: 1px solid #E4E4E4;
 }
-
-.audio-info {
+.info-audio {
   background-color: #3E3E3E;
   height: 90px;
   color: #FFFFFF;
@@ -332,32 +302,27 @@ main{
   padding: 12px 20px;
   border-radius: 8px;
 }
-
-.audio-info h4 {
+.info-audio h4 {
   font-family: "Roboto", sans-serif;
   margin-bottom: 3px;
   font-size: 18px;
-  max-width: clamp(150px, 50vw, 250px); /* min 80px, varia até 30% da largura da tela, máx 250px */
+  max-width: clamp(150px, 50vw, 250px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-
-.audio-title,
-.audio-meta {
+.titulo-audio,
+.meta-audio {
   font-size: 0.85rem;
   font-family: "Roboto", sans-serif;
 }
-
- .audio-meta{
+.meta-audio{
   display: flex;
   flex-direction: row;
   column-gap: 12px;
   flex-wrap: wrap;
-} 
-
-.audio-meta .separador{
+}
+.meta-audio .separador{
   background-color: #fff;
 }
 
@@ -369,7 +334,6 @@ main{
   appearance: none;
   outline: none;
 }
-
 #barra-progresso::-webkit-slider-thumb {
   appearance: none;
   width: 14px;
@@ -380,22 +344,18 @@ main{
   border: none;
 }
 
-.audio-buttons {
-  /* display: flex;
-  align-items: center;
-  justify-content: space-between; */
+.botoes-audio {
   display: grid;
   grid-template-columns: 1fr 1fr 2fr;
   align-items: center;
   gap: 16px;
 }
-
-.audio-icon{
+.icone-audio{
   width: 50px;
 }
 
-.btn-repetir,
-.btn-play {
+.botao-repetir,
+.botao-ouvir {
   padding: 10px 24px;
   height: 40px;
   width: 130px;
@@ -412,30 +372,25 @@ main{
   gap: 6px;
   text-transform: uppercase;
 }
-
-.btn-repetir {
+.botao-repetir {
   background: #e0e0e0;
   color: #656565;
 }
-#repetir-btn.ativo {
+#botao-repetir.ativo {
   background-color: #0077cc;
   color: white;
 }
-
-.btn-repetir:hover {
-  background: #d4d4d4;
+.botao-repetir:hover { 
+  background: #d4d4d4; 
 }
-
-.btn-play {
-  background: #007bff;
-  color: #fff;
+.botao-ouvir { 
+  background: #007bff; 
+  color: #fff; 
 }
-
-.btn-play:hover {
-  background: #006ae0;
+.botao-ouvir:hover { 
+  background: #006ae0; 
 }
-
-.volume-control {
+.controle-volume {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -446,12 +401,10 @@ main{
   outline: none;
   width: 100%;
 }
-
-.volume-control input[type="range"] {
+.controle-volume input[type="range"] {
   width: 100px;
   accent-color: #f5c321;
 }
-
 
 #link-download {
   background-color: #0077CC;
@@ -470,26 +423,24 @@ main{
   transition: 0.2s;
   font-weight: 600;
 }
-
-#link-download:hover {
-  background-color: #01538d;
+#link-download:hover { 
+  background-color: #01538d; 
 }
 
-.tempo-player{
+.controle-tempo{
   width: 100%;
   display: flex;
   align-items: center;
   gap: 18px;
   margin: 30px 0px 20px 0;
 }
-
 #tempo-inicial, #tempo-final{
   color: #4E4E4E;
   font-family: "Roboto";
   font-weight: 600;
 }
 
-#overlay-conversao {
+#sobreposicao-conversao {
   position: fixed;
   top: 0;
   left: 0;
@@ -501,7 +452,7 @@ main{
   place-items: center;
 }
 
-#overlay-conversao .modal {
+#sobreposicao-conversao .caixa-modal {
   background-color: #F5F5F5;
   height: auto;
   max-width: 464px;
@@ -514,16 +465,12 @@ main{
   font-size: 1.1rem;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
 }
-.modal p{
+.caixa-modal p{
   display: flex;
   gap: 14px;
   align-items: start;
 }
 
-.upload-box.drag-over {
-  border-color: #0077cc;
-  background-color: #e8f4ff;
-}
 .rodape{
   font-family: "Roboto";
   font-weight: 500;
@@ -532,13 +479,8 @@ main{
   padding: 24px 68px;
 }
 
-/* Responsividade */
-
 @media (max-width:1200px) {
-
-  body{
-    height: auto;
-  }
+  body{ height: auto; }
   header .cabecalho{
     position: static;
     width: auto;
@@ -549,61 +491,37 @@ main{
     height: auto;
   }
 }
-@media (max-width: 830px) {
-
-}
 
 @media (max-width: 680px){
-  .upload-container{
-    width: 95%;
-  }
-  .anexo{
-    align-items: start;
-    row-gap: 12px;
-  }
-  .anexo .file-name{
-    width: 100%;
-  }
-  .anexo .remove-btn{
+  .container-upload{ width: 95%; }
+  .bloco-anexo{ align-items: start; row-gap: 12px; }
+  .bloco-anexo .nome-arquivo{ width: 100%; }
+  .bloco-anexo .botao-remover{
     width: 100%;
     padding: 10px 14px;
   }
 }
 
 @media (max-width: 560px){
+  .container-upload{ padding: 30px 30px 60px 30px; }
+  header .cabecalho{ display: block; text-align: center; }
 
-  .upload-container{
-    padding: 30px 30px 60px 30px;
-  }
-  header .cabecalho{
-    display: block;
-    text-align: center;
-  }
+  #secao-player{ min-width: 95%; width: 95%; }
 
-  #player-section{
-    min-width: 95%; 
-    width: 95%;
-  }
-  .audio-buttons{
-    /* display: block;
-    width: 220px;
-    margin: 0 auto; */
+  .botoes-audio{
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     align-content: start;
-  }  
-  .audio-buttons button{
-    width: 100%;
   }
-  .volume-control{
+  .botoes-audio button{ width: 100%; }
+  .controle-volume{
     max-width: none;
     grid-column: 1/-1;
     align-self: start;
   }
-  .btn-play{
-    margin: 15px 0;
-  }
+  .botao-ouvir { margin: 15px 0; }
+
   #link-download{
     max-width: none;
     width: 100%;
@@ -612,11 +530,6 @@ main{
 }
 
 @media (max-width: 430px){
-   .audio-meta {
-    flex-direction: column;
-  }
-
-    .separador{
-    display: none;
-  }
+  .meta-audio { flex-direction: column; }
+  .separador{ display: none; }
 }

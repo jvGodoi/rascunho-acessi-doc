@@ -2,80 +2,82 @@
 <html lang="pt-br">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <title>AcessiDoc</title>
 </head>
 
 <body>
   <header>
     <div class="cabecalho">
-      <div class="logo">
-        <a href="#">
+      <div class="marca">
+        <a href="/">
           <h1>Acessi<span>Doc.</span></h1>
         </a>
       </div>
-      <!-- <a href="#" class="conta">
-        <img src="{{ url_for('static', filename='icones/conta.svg') }}" alt="Ícone da conta">
+      <!--
+      <a href="#" class="conta">
+        <img src="{{ url_for('static', filename='icones/conta.svg') }}" alt="Ícone da conta" />
         Minha Conta
-      </a> -->
+      </a>
+      -->
     </div>
   </header>
+
   <main>
-    <!--     <img src="{{ url_for('static', filename='icones/acessi.svg') }}" alt="acessibilidade" class="acessibilidade-icon" />
+    <!--     <img src="{{ url_for('static', filename='icones/acessi.svg') }}" alt="acessibilidade" class="icone-acessibilidade" />
  -->
-    <section class="upload-container">
-      <div class="arquivo">
-        <input type="file" id="arquivoInput" class="file-input" accept=".pdf, .docx, .txt" />
-        <label for="arquivoInput" class="upload-box" id="drop-zone">
-          <img src="{{ url_for('static', filename='img/upload.png') }}" alt="Upload" class="upload-icon" />
-          <p>Arraste e solte o arquivo<br>ou Clique para selecionar</p>
+    <section class="container-upload">
+      <div class="bloco-arquivo">
+        <input type="file" id="entrada-arquivo" class="entrada-arquivo" accept=".pdf, .docx, .txt" />
+        <label for="entrada-arquivo" class="caixa-upload" id="zona-soltar">
+          <img src="{{ url_for('static', filename='img/upload.png') }}" alt="Upload" class="icone-upload" />
+          <p>Arraste e solte o arquivo<br />ou Clique para selecionar</p>
         </label>
       </div>
 
-      <!-- Preview do anexo -->
       <h4 class="info-idioma">O idioma será detectado automaticamente</h4>
-      <div class="anexo" id="anexoInfo">
+      <div class="bloco-anexo" id="info-anexo">
         <h4>Nenhum Arquivo Selecionado</h4>
       </div>
 
-      <div class="voz">
-
+      <div class="bloco-voz">
         <fieldset class="voz-genero">
-          <div class="voz-genero-cont">
+          <div class="voz-genero-conteudo">
             <legend class="voz-genero-titulo">Converter na voz:</legend>
           </div>
-          <div class="voz-genero-vozes">
-            <input type="radio" id="vozF" name="gender" value="Female" checked>
-            <label class="voz-genero-gen" for="vozF">Feminina</label>
 
-            <input type="radio" id="vozM" name="gender" value="Male">
-            <label class="voz-genero-gen" for="vozM">Masculina</label>
+          <div class="voz-genero-opcoes">
+            <input type="radio" id="voz-feminina" name="preferred_gender" value="Female" checked />
+            <label class="voz-genero-rotulo" for="voz-feminina">Feminina</label>
+
+            <input type="radio" id="voz-masculina" name="preferred_gender" value="Male" />
+            <label class="voz-genero-rotulo" for="voz-masculina">Masculina</label>
           </div>
         </fieldset>
       </div>
-      <div class="btn-converter">
-        <button type="button" class="btn">
+
+      <div class="bloco-converter">
+        <button type="button" class="botao botao-converter">
           Converter
         </button>
-        <div id="status-conversao" class="status-mensagem" aria-live="polite">
-        </div>
+        <div id="status-conversao" class="mensagem-status" aria-live="polite"></div>
       </div>
     </section>
 
-    <section id="player-section" style="display: none;" class="audio-player">
-      <p class="audio-label">Ouça abaixo o áudio convertido.</p>
+    <section id="secao-player" style="display: none;" class="tocador-audio">
+      <p class="rotulo-audio">Ouça abaixo o áudio convertido.</p>
 
-      <div class="audio-box">
-        <div class="audio-info">
-          <img src="{{ url_for('static', filename='icones/audio.svg') }}" alt="Ícone PDF" class="audio-icon">
+      <div class="caixa-audio">
+        <div class="info-audio">
+          <img src="{{ url_for('static', filename='icones/audio.svg') }}" alt="Ícone de áudio" class="icone-audio" />
           <div>
-            <h4 class="audio-title" id="audio-nome">Nome do Arquivo</h4>
-            <div class="audio-meta" id="audio-meta">
+            <h4 class="titulo-audio" id="nome-audio">Nome do Arquivo</h4>
+            <div class="meta-audio" id="meta-audio">
               <span>Voz</span>
               <span class="separador"></span>
               <span>Idioma</span>
@@ -83,54 +85,59 @@
           </div>
         </div>
 
-        <audio id="audio">
-          <source id="audio-src" src="" type="audio/mp3">
+        <audio id="elemento-audio">
+          <source id="fonte-audio" src="" type="audio/mp3" />
           Seu navegador não suporta o elemento de áudio.
         </audio>
 
-        <div class="tempo-player">
+        <div class="controle-tempo">
           <span id="tempo-inicial">00:00</span>
-          <input type="range" id="barra-progresso" value="0" step="any">
+          <input type="range" id="barra-progresso" value="0" step="any" />
           <span id="tempo-final">00:00</span>
         </div>
 
-
-        <div class="audio-buttons">
-          <button id="repetir-btn" class="btn-repetir">
-            <img src="{{ url_for('static', filename='icones/repetir.svg') }}" alt="Volume">
+        <div class="botoes-audio">
+          <button id="botao-repetir" class="botao botao-repetir">
+            <img src="{{ url_for('static', filename='icones/repetir.svg') }}" alt="Repetir" />
             Repetir
           </button>
 
-          <button id="play-btn" class="btn-play">
-            <img src="{{ url_for('static', filename='icones/fone.svg') }}" alt="Volume">
+          <button id="botao-ouvir" class="botao botao-ouvir">
+            <img src="{{ url_for('static', filename='icones/fone.svg') }}" alt="Ouvir" />
             Ouvir
           </button>
 
-          <div class="volume-control">
-            <img id="volume-icon" src="/static/icones/volume.svg" alt="Volume" style="cursor: pointer;">
+          <div class="controle-volume">
+            <img id="icone-volume" src="{{ url_for('static', filename='icones/volume.svg') }}" alt="Volume" style="cursor: pointer;" />
             <input type="range" id="volume" min="0" max="1" step="0.1" value="1" />
           </div>
         </div>
       </div>
 
-      <p class="download-label">Baixe-o para ouvir em qualquer lugar.</p>
-      <a id="link-download" href="#" download class="btn-download" data-convertido="false">
-        <img src="{{ url_for('static', filename='icones/download.svg') }}" alt="">
+      <p class="rotulo-download">Baixe-o para ouvir em qualquer lugar.</p>
+      <a id="link-download" href="#" download class="botao botao-download" data-convertido="false">
+        <img src="{{ url_for('static', filename='icones/download.svg') }}" alt="Baixar" />
         Baixar Áudio
       </a>
-
     </section>
 
-    <div id="overlay-conversao" style="display: none;">
-      <div class="modal">
-        <p><img src="{{ url_for('static', filename='icones/tempo.svg') }}" alt="tempo"> O arquivo está sendo convertido...</p>
+    <div id="sobreposicao-conversao" style="display: none;">
+      <div class="caixa-modal">
+        <p>
+          <img src="{{ url_for('static', filename='icones/tempo.svg') }}" alt="Tempo" />
+          O arquivo está sendo convertido...
+        </p>
       </div>
     </div>
   </main>
-  <!--   <footer class="rodape">
+
+  <!--
+  <footer class="rodape">
     João Vitor dos Anjos Godoi - 2025
-  </footer> -->
-  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </footer>
+  -->
+
+  <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
 </html>
