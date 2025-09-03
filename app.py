@@ -1,10 +1,11 @@
 import os
+import re
 import time
 import asyncio
-import re
 import tempfile
-import shutil
+import subprocess
 from typing import List
+
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
@@ -12,7 +13,6 @@ from docx import Document
 from langdetect import detect
 from catalogo_vozes import vozes_por_idioma, voz_padrao_para_idioma, como_voz_publica
 import edge_tts
-from pydub import AudioSegment 
 
 # ===================== CONFIGURAÇÃO =====================
 app = Flask(__name__)
@@ -23,8 +23,7 @@ EXTENSOES_PERMITIDAS = {'pdf', 'docx', 'txt'}
 os.makedirs(PASTA_UPLOADS, exist_ok=True)
 os.makedirs(PASTA_AUDIO, exist_ok=True)
 
-MAX_CHARS_TTS = 2800
-
+# Fallbacks locais caso o catálogo não retorne nada
 VOZES_MASC = {
     "pt": "pt-BR-AntonioNeural",
     "en": "en-US-GuyNeural",
@@ -49,23 +48,25 @@ def extensao_permitida(nome_arquivo: str) -> bool:
     return '.' in nome_arquivo and nome_arquivo.rsplit('.', 1)[1].lower() in EXTENSOES_PERMITIDAS
 
 def limpar_texto(texto: str) -> str:
-    texto = re.sub(r'-\s*\n\s*', '', texto)   
-    texto = re.sub(r'[ \t]+', ' ', texto)
-    texto = re.sub(r'\s*\n\s*', '\n', texto)   
-    texto = re.sub(r'\n{2,}', '\n', texto)
+    # Normaliza quebras e espaços; remove hífen de quebra de linha
+    texto = re.sub(r'-\s*\n\s*', '', texto)            # junta palavras hifenizadas no fim de linha
+    texto = re.sub(r'[ \t]+', ' ', texto)              # colapsa múltiplos espaços/tabs
+    texto = re.sub(r'\s*\n\s*', '\n', texto)           # normaliza quebras de linha
+    texto = re.sub(r'\n{2,}', '\n\n', texto)           # mantém parágrafos
     return texto.strip()
 
 def extrair_texto(caminho: str) -> str:
     ext = caminho.rsplit('.', 1)[1].lower()
     if ext == 'pdf':
         leitor = PdfReader(caminho)
-        return "\n".join([pagina.extract_text() or "" for pagina in leitor.pages]).strip()
+        # alguns PDFs retornam None em páginas sem texto extraível
+        return "\n".join(filter(None, [(p.extract_text() or "") for p in leitor.pages])).strip()
     elif ext == 'docx':
         doc = Document(caminho)
-        return "\n".join([p.text for p in doc.paragraphs])
+        return "\n".join(p.text for p in doc.paragraphs).strip()
     elif ext == 'txt':
         with open(caminho, 'r', encoding='utf-8', errors='ignore') as f:
-            return f.read()
+            return f.read().strip()
     else:
         raise ValueError("Formato de arquivo não suportado.")
 
@@ -83,76 +84,89 @@ def escolher_voz_fallback(idioma: str, genero_preferido: str | None) -> str:
         return VOZES_MASC.get(lang, VOZES_MASC["pt"])
     return VOZES_MASC.get(lang, VOZES_MASC["pt"])
 
-def _fatiar_por_limite(texto: str, max_chars: int) -> List[str]:
+def dividir_em_blocos(texto: str, max_chars: int = 2800) -> List[str]:
+    """
+    Divide o texto grande em blocos menores respeitando pontos finais sempre que possível.
+    'max_chars' pode ser ajustado entre ~2200 e 3000.
+    """
+    texto = texto.strip()
+    if not texto:
+        return []
+    if len(texto) <= max_chars:
+        return [texto]
 
-    partes = re.split(r'(?<=[\.\!\?])\s+|\n', texto)
     blocos = []
-    atual = ""
+    inicio = 0
+    n = len(texto)
 
-    for p in partes:
-        if not p:
-            continue
-        if len(atual) + len(p) + 1 <= max_chars:
-            atual = (atual + " " + p).strip() if atual else p.strip()
+    while inicio < n:
+        fim = min(inicio + max_chars, n)
+        # tenta cortar no último ponto próximo ao fim do bloco
+        corte = texto.rfind('.', inicio, fim)
+        # se não achar ponto razoável, corta bruto
+        if corte == -1 or corte <= inicio + int(max_chars * 0.6):
+            corte = fim
         else:
-            if atual:
-                blocos.append(atual.strip())
-            if len(p) > max_chars:
-                inicio = 0
-                while inicio < len(p):
-                    blocos.append(p[inicio:inicio + max_chars].strip())
-                    inicio += max_chars
-                atual = ""
-            else:
-                atual = p.strip()
+            corte += 1  # inclui o ponto
 
-    if atual:
-        blocos.append(atual.strip())
+        bloco = texto[inicio:corte].strip()
+        if bloco:
+            blocos.append(bloco)
+        inicio = corte
 
-    return [b for b in blocos if b]
+    return blocos
 
-async def _sintetizar_bloco_async(texto_bloco: str, voz: str, caminho_mp3: str, tentativas: int = 3):
+async def sintetizar_bloco_async(texto: str, voz: str, caminho_saida: str):
+    comunicador = edge_tts.Communicate(texto, voice=voz)
+    await comunicador.save(caminho_saida)
 
-    ultimo_erro = None
-    for _ in range(tentativas):
-        try:
-            comunicador = edge_tts.Communicate(texto_bloco, voice=voz)
-            await comunicador.save(caminho_mp3)
-            return
-        except Exception as e:
-            ultimo_erro = e
-            await asyncio.sleep(0.8)
-    raise RuntimeError(f"Falha ao sintetizar um bloco: {ultimo_erro}")
-
-def _juntar_mp3(partes: List[str], destino: str):
-
-    combinado = AudioSegment.silent(duration=0)
-    for caminho in partes:
-        segmento = AudioSegment.from_file(caminho, format="mp3")
-        combinado += segmento
-    combinado.export(destino, format="mp3", bitrate="192k")
-
-def sintetizar_texto_grande_para_mp3(texto: str, voz: str, caminho_saida: str):
-
-    blocos = _fatiar_por_limite(texto, MAX_CHARS_TTS)
+def sintetizar_varios_blocos_para_mp3(blocos: List[str], voz: str, caminho_final: str):
+    """
+    Gera um MP3 para cada bloco (arquivos temporários) e concatena tudo com ffmpeg (sem re-encode).
+    Requer ffmpeg instalado (no Render, adicione 'ffmpeg' no apt.txt).
+    """
     if not blocos:
-        # nada para sintetizar -> gera 1s de silêncio p/ evitar erro de player
-        AudioSegment.silent(duration=1000).export(caminho_saida, format="mp3")
-        return
+        raise ValueError("Sem conteúdo para sintetizar.")
 
-    tmp_dir = tempfile.mkdtemp(prefix="tts_parts_")
-    arquivos_partes = []
+    tmpfiles = []
+    list_path = None
     try:
-        # sintetiza cada bloco sequencialmente
-        for idx, bloco in enumerate(blocos, start=1):
-            caminho_parte = os.path.join(tmp_dir, f"parte_{idx:04d}.mp3")
-            asyncio.run(_sintetizar_bloco_async(bloco, voz, caminho_parte))
-            arquivos_partes.append(caminho_parte)
+        # 1) sintetiza cada bloco
+        for i, bloco in enumerate(blocos, start=1):
+            fd, tmp_path = tempfile.mkstemp(suffix=".mp3", prefix=f"chunk_{i:03d}_")
+            os.close(fd)
+            asyncio.run(sintetizar_bloco_async(bloco, voz, tmp_path))
+            tmpfiles.append(tmp_path)
 
-        _juntar_mp3(arquivos_partes, caminho_saida)
+        # 2) cria lista para concat demuxer
+        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".txt") as f_list:
+            list_path = f_list.name
+            for p in tmpfiles:
+                f_list.write(f"file '{os.path.abspath(p)}'\n")
+
+        # 3) concatena sem re-encode
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "concat", "-safe", "0",
+            "-i", list_path,
+            "-c", "copy",
+            caminho_final
+        ]
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if proc.returncode != 0:
+            raise RuntimeError(f"Falha no ffmpeg concat: {proc.stderr[:500]}")
 
     finally:
-        shutil.rmtree(tmp_dir, ignore_errors=True)
+        for p in tmpfiles:
+            try:
+                os.remove(p)
+            except:
+                pass
+        if list_path:
+            try:
+                os.remove(list_path)
+            except:
+                pass
 
 # ===================== ROTAS =====================
 @app.route("/")
@@ -188,15 +202,18 @@ def convert():
     try:
         texto_bruto = extrair_texto(caminho_upload)
         texto = limpar_texto(texto_bruto)
+        if not texto:
+            return jsonify(error="Não foi possível extrair texto do arquivo."), 400
+
         idioma = detectar_idioma(texto)  # ex.: 'pt'
+        genero_preferido = request.form.get("preferred_gender")  # 'Male' | 'Female' | None
+        voz_usuario = request.form.get("voice")                  # ex.: 'pt-BR-FranciscaNeural'
 
-        genero_preferido = request.form.get("preferred_gender")
-        voz_usuario = request.form.get("voice")
-
+        # Lista de vozes possíveis para o idioma detectado
         vozes_disponiveis = vozes_por_idioma(idioma)
 
         def voz_valida(vshort: str) -> bool:
-            return any(vshort == v["shortName"] for v in vozes_disponiveis)
+            return any(vshort == v.get("shortName") for v in vozes_disponiveis)
 
         if voz_usuario and voz_valida(voz_usuario):
             voz_escolhida = voz_usuario
@@ -205,11 +222,15 @@ def convert():
             if not voz_escolhida:
                 voz_escolhida = escolher_voz_fallback(idioma, genero_preferido)
 
+        # Saída final
         nome_saida = f"{os.path.splitext(nome_seguro)[0]}_{int(t.time())}.mp3"
         caminho_saida = os.path.join(PASTA_AUDIO, nome_saida)
 
-        sintetizar_texto_grande_para_mp3(texto, voz_escolhida, caminho_saida)
+        # Divide e sintetiza em blocos para garantir áudio completo
+        blocos = dividir_em_blocos(texto, max_chars=2800)
+        sintetizar_varios_blocos_para_mp3(blocos, voz_escolhida, caminho_saida)
 
+        # Log de tempo
         duracao = t.time() - inicio
         if duracao < 60:
             print(f"[INFO] Conversão concluída em {duracao:.2f} segundos para '{nome_seguro}'")
@@ -225,8 +246,10 @@ def convert():
             available_voices=[como_voz_publica(v) for v in vozes_disponiveis],
             audio_url=f"/audio/{nome_saida}"
         )
+
     except Exception as e:
         return jsonify(error=str(e)), 500
+
     finally:
         try:
             os.remove(caminho_upload)
@@ -237,5 +260,7 @@ def convert():
 def obter_audio(filename):
     return send_from_directory(PASTA_AUDIO, filename, as_attachment=False)
 
+# ===================== MAIN =====================
 if __name__ == "__main__":
+    # Em produção (Render), use gunicorn: web: gunicorn app:app
     app.run(debug=True)
